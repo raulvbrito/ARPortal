@@ -13,22 +13,29 @@ import ARKit
 class ViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
+    var portalNode: SCNNode?
+    var isPortalPlaced = false
+    var debugPlanes: [SCNNode] = []
+	
+    let positionY: CGFloat = -0.25
+    let positionZ: CGFloat = 0
+	let doorWidth: CGFloat = 1.0
+	let doorHeight: CGFloat = 2.4
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Set the view's delegate
-        sceneView.delegate = self
-        
-        // Show statistics such as fps and timing information
-        sceneView.showsStatistics = true
-        
-        // Create a new scene
-        let scene = SCNScene(named: "art.scnassets/ship.scn")!
-        
-        // Set the scene to the view
-        sceneView.scene = scene
+		
+        runSession()
     }
+	
+    func runSession() {
+    	let configuration = ARWorldTrackingConfiguration()
+    	configuration.planeDetection = .horizontal
+		
+    	sceneView.session.run(configuration, options: [.removeExistingAnchors])
+    	sceneView.debugOptions = [.renderAsWireframe, .showFeaturePoints]
+    	sceneView.delegate = self
+	}
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

@@ -13,6 +13,7 @@
 		41F3452922C42978009CABBD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 41F3452722C42978009CABBD /* Main.storyboard */; };
 		41F3452B22C4297A009CABBD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 41F3452A22C4297A009CABBD /* Assets.xcassets */; };
 		41F3452E22C4297A009CABBD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 41F3452C22C4297A009CABBD /* LaunchScreen.storyboard */; };
+		41F3453622C42C02009CABBD /* ARPortal.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 41F3453522C42C02009CABBD /* ARPortal.scnassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		41F3452A22C4297A009CABBD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		41F3452D22C4297A009CABBD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		41F3452F22C4297A009CABBD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		41F3453522C42C02009CABBD /* ARPortal.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = ARPortal.scnassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +58,7 @@
 		41F3452022C42978009CABBD /* ARPortal */ = {
 			isa = PBXGroup;
 			children = (
+				41F3453522C42C02009CABBD /* ARPortal.scnassets */,
 				41F3452122C42978009CABBD /* AppDelegate.swift */,
 				41F3452322C42978009CABBD /* art.scnassets */,
 				41F3452522C42978009CABBD /* ViewController.swift */,
@@ -128,6 +131,7 @@
 				41F3452422C42978009CABBD /* art.scnassets in Resources */,
 				41F3452E22C4297A009CABBD /* LaunchScreen.storyboard in Resources */,
 				41F3452B22C4297A009CABBD /* Assets.xcassets in Resources */,
+				41F3453622C42C02009CABBD /* ARPortal.scnassets in Resources */,
 				41F3452922C42978009CABBD /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
