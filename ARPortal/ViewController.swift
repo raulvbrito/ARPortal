@@ -10,10 +10,12 @@ import UIKit
 import SceneKit
 import ARKit
 
-class ViewController: UIViewController, ARSCNViewDelegate {
+class ViewController: UIViewController {
 
     @IBOutlet var sceneView: ARSCNView!
-    var portalNode: SCNNode?
+	@IBOutlet weak var crosshairView: UIView!
+	
+	var portalNode: SCNNode?
     var isPortalPlaced = false
     var debugPlanes: [SCNNode] = []
 	
@@ -31,52 +33,94 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     func runSession() {
     	let configuration = ARWorldTrackingConfiguration()
     	configuration.planeDetection = .horizontal
+    	configuration.isLightEstimationEnabled = true
 		
     	sceneView.session.run(configuration, options: [.removeExistingAnchors])
-    	sceneView.debugOptions = [.renderAsWireframe, .showFeaturePoints]
+    	sceneView.debugOptions = [.showFeaturePoints]
     	sceneView.delegate = self
 	}
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // Create a session configuration
-        let configuration = ARWorldTrackingConfiguration()
-
-        // Run the view's session
-        sceneView.session.run(configuration)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
-        // Pause the view's session
         sceneView.session.pause()
     }
+	
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+		if let hitTest = self.sceneView.hitTest(self.view.center, types: .existingPlaneUsingExtent).first {
+			sceneView.session.add(anchor: ARAnchor(transform: hitTest.worldTransform))
+		}
+	}
 
-    // MARK: - ARSCNViewDelegate
-    
-/*
-    // Override to create and configure nodes for anchors added to the view's session.
-    func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
-        let node = SCNNode()
-     
-        return node
-    }
-*/
-    
-    func session(_ session: ARSession, didFailWithError error: Error) {
-        // Present an error message to the user
-        
-    }
-    
-    func sessionWasInterrupted(_ session: ARSession) {
-        // Inform the user that the session has been interrupted, for example, by presenting an overlay
-        
-    }
-    
-    func sessionInterruptionEnded(_ session: ARSession) {
-        // Reset tracking and/or remove existing anchors if consistent tracking is required
-        
-    }
+   	func createPlaneNode(center: vector_float3, extent: vector_float3) -> SCNNode {
+   		let plane = SCNPlane(width: CGFloat(extent.x), height: CGFloat(extent.z))
+		
+		let planeMaterial = SCNMaterial()
+		planeMaterial.diffuse.contents = UIColor.yellow.withAlphaComponent(0.3)
+		plane.materials = [planeMaterial]
+		
+		let planeNode = SCNNode(geometry: plane)
+		planeNode.position = SCNVector3(center.x, 0, center.z)
+		planeNode.transform = SCNMatrix4MakeRotation(-Float.pi/2, 1, 0, 0)
+		
+		return planeNode
+	}
+	
+	func updatePlaneNode(_ node: SCNNode, center: vector_float3, extent: vector_float3) {
+		let geometry = node.geometry as? SCNPlane
+		geometry?.width = CGFloat(extent.x)
+		geometry?.height = CGFloat(extent.z)
+		
+		node.position = SCNVector3Make(center.x, 0, center.z)
+	}
+	
+	func makePortal() -> SCNNode {
+		
+	}
+	
+	func removeDebugPlanes() {
+		for debugPlane in debugPlanes {
+			debugPlane.removeFromParentNode()
+		}
+		
+		debugPlanes = []
+	}
+}
+
+extension ViewController: ARSCNViewDelegate {
+
+	func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
+		if let planeAnchor = anchor as? ARPlaneAnchor, !isPortalPlaced {
+			let debugPlane = createPlaneNode(center: planeAnchor.center, extent: planeAnchor.extent)
+			node.addChildNode(debugPlane)
+			debugPlanes.append(debugPlane)
+		} else if !isPortalPlaced {
+			portalNode = makePortal()
+			
+			if let portalNode = portalNode {
+				node.addChildNode(portalNode)
+				isPortalPlaced = true
+				sceneView.debugOptions = []
+			}
+		}
+	}
+	
+	func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
+		if let planeAnchor = anchor as? ARPlaneAnchor, !isPortalPlaced, !node.childNodes.isEmpty {
+			updatePlaneNode(node.childNodes[0], center: planeAnchor.center, extent: planeAnchor.extent)
+		}
+	}
+	
+	func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
+		DispatchQueue.main.async {
+			if let _ = self.sceneView.hitTest(self.view.center, types: .existingPlaneUsingExtent).first {
+				self.crosshairView.backgroundColor = .green
+			} else {
+				self.crosshairView.backgroundColor = .red
+			}
+		}
+	}
 }
